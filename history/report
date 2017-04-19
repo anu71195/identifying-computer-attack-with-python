@@ -1,0 +1,42 @@
+grams
+gram
+token
+try 1-10
+moduletry1-8
+try11-15
+large
+large2
+large3-138MB/47secs/2grams
+medium1
+medium1 - 7.7MB/39secs/2grams
+medium2
+medium2-7.7MB/35secs/2grams
+small1
+small1 = 7.4MB/33secs/2grams
+small1=40MB/156secs/3grams
+small2
+small2=38MB/102secs/3grams
+small2=7.5MB/22secs/2grams
+small3
+compare(different changes)
+practice2			#tried dictionary
+verysmall1		#implemented dictionary
+small3 =11.8/274secs/3,5grams		/no validation data master
+versmall1=11.8/34/3,5
+verysmall2				/added comments
+verysmall2 = 30.7/120seconds/3,5,7 grams//no validation data master
+verysmall2=/586.8MB/1650secs/3,5,7grams
+verysmall3
+verysmall3=38.3mb/97secs/3grams
+verysmall3=84secs/3,5,7grams no validation data master
+verysmall4
+verysmall5
+verysmall5=33secs/30.7mb/3,5,7grams //no validation data master
+verysmall6
+verysmall6 =32secs/30.7mb/3,5,7grams 				//no validation data master
+verysmall7
+verysmall7=28secs/38.3mb/3grams				(full)
+verysmall7=337secs/586.8mb/3,5,7grams				(full)
+modifying1
+modifying2
+modifying3

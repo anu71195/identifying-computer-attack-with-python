@@ -1,0 +1,892 @@
+Problem Statement:-
+
+Given dataset was generated on Linux local server by Australian Defence Force Academy-Linux Dataset (ADFA-LD) running on Ubuntu 11.04, offering a variety of functions such as file sharing, database, remote access and web server.
+
+Six types of attacks occur in ADFA-LD including two brute force password guessing attempts on the open ports enabled by FTP and SSH respectively, an unauthorised attempt to create a new user with root privileges through encoding a malicious payload into a normal executable, the uploads of Java and Linux executable Meterpreter payloads for the remote compromise of a target host, and the compromise and privilege escalation using C100 webshell. These types are termed as Hydra-FTP, Hydra-SSH, Adduser, Java-Meterpreter, Meterpreter and Webshell respectively. 
+
+So, to identify the type of attack from the given dataset, we implemented an algorithm to train the system from the Training_Data_Master and 70% of the Attack_Data_Master and thus generating features from it. top 30% of these features(sorted in higher to lower frequency) is further used to find the frequency of these features in the test data (30%(remaining) of the Attack_Data_Master). This final data can be used to identify the type of attack.
+
+So, the code implemented for it, is displayed and explained below.
+
+Libraries Used:- os,time,math,nltk
+
+objects and functions used from these libraries:
+	os:		system(command)			-->	works same as executing what is stored in command variable in terminal
+			getcwd()				-->	returns the current working directory
+			walk(directory)			-->	looping over walk with the directory as argument returns all the folders, subfolders and files 							   	in the directory
+			chdir(path)				-->	changes the current working directory by taking the path to the another directory as argument
+
+	time:	time()					-->	returns value of time in seconds since 0 hours, 0 minutes, 0 seconds, January 1, 1970
+
+	math:	ceil()					-->	takes argument as a floating number and returns the nearest integer equal to or greater than it
+
+	nltk:	ngrams(text,so_grams)	-->	returns the ngrams of size given as so_grams as input for the data given in the text argument;
+
+
+Implementation:-
+
+
+
+
+
+		BLOCK-1(listing 1)
+			
+	import os
+	import time
+	import math
+	import nltk
+	from time import time
+	from nltk import ngrams
+
+It imports all the libraries and some necessary objects as well as functions from it.
+
+
+
+
+
+		BLOCK-2(listing 2)
+
+	all_net_grams=[3,5,7]
+
+This varialbe stores the size of grams for which the training and testing is to be done, it can be changed to any number large or small greater than zero and length of the variable (list) can be set as long as wanted. However, the more the arguments or bigger the number, more will be the time taken for the execution of the program. e.g. 3,5,7 are the size of ngrams with the length of the variable becoming equal to 3
+
+
+
+
+
+
+		BLOCK-3(listing 3)
+
+	line 0			timestamp=time();
+	 .
+	 .
+	 .
+	 .				/*code*/
+	 .
+	 .
+	line t			print("time taken = ",time()-timestamp)
+
+This starts counting time at line 0 and at line t prints the time taken to execute the code between those lines(line 0 and t)
+
+
+
+
+
+		BLOCK-4(listing 4)
+
+
+	os.system("rm hydra_ftp_training.txt & rm hydra_ssh_training.txt & rm java_meterpreter_training.txt & rm meterpreter_training.txt & rm webshell_training.txt")
+
+	os.system("rm Training_Data_Master.txt & rm Validation_Data_Master.txt & rm adduser_training.txt & rm adduser_test.txt & rm hydra_ftp_test.txt ");
+
+	os.system("rm hydra_ssh_test.txt & rm java_meterpreter_test.txt & rm meterpreter_test.txt & rm webshell_test.txt")
+	os.system("rm -rf output")
+	os.system("rm featurefile.txt");
+	os.system("rm 3* & rm 5* & rm 7* & rm 1* & rm 2* & rm 4* & rm 6* & rm 8* & rm 9*")
+
+This deletes all the unnecessary files and folders and the files and folders generated during the running of the last instance of the program
+
+
+
+
+		BLOCK-5(listing 5)
+
+
+	cwd0=os.getcwd();
+	for sub0,folders0,files0 in os.walk(cwd0):
+		if len(folders0)>0 :
+			break;
+	folders0.sort();
+
+cwd0 stores the current working directory which is ADFA-LD directory where Attack_Data_Master and Training_Data_Master are present, we will call this directory as main directory of ADFA-LD directory. in the next set of lines, we recursed over all the files and folders in the main directory and then the array(folders0) stores folders(at that time i.e. when folders0 stores folders len(folders)>0) then it will break. This part is necessary since, we are recursing over all the files and folders and at most time, we will be recursing over files inside the main directory and at that time folders0 will be empty. After getting all the folders, we sorted the folders in alphabetical order.
+(Note: folders0, sub0, cwd0 the numbers succedding the variables here are 0 which represents the depth of those directory,files or folders with respect to the main directory)
+
+
+
+
+
+		BLOCK-6(listing 6)
+
+
+	path=cwd0+"/"+folders0[0]; 
+	os.chdir(path);
+	cwd1=os.getcwd();
+	for sub1,folders1,files1 in os.walk(cwd1):
+		if len(folders1)>0:
+			break;
+	folders1.sort();
+
+Here, we changed the directory with os.chdir with the input argument as path. We set path by using the current directory which is the main directory here and then appending the folders[0] to it, since it is sorted in alphabetical order it is Attack_Data_Master. so cwd1 now stores the path to the Attack_Data_Master. We then stored all the names of folders inside Attack_Data_Master in the folders1 in alphabetical order.
+(Notice:here, the depth of folders and directories with respect to the main directory is 1 so the name given to them is folders1, cwd1...)
+
+
+
+
+
+		BLOCK-7(listing 7)
+
+
+	path=cwd1+"/"+folders1[i];
+	os.chdir(path);
+	cwd2=os.getcwd();
+	for sub2,folders2,files2 in os.walk(cwd2):
+			pass;
+
+path consists the ith folder in cwd1 i.e. Attack_Data_Master in this case. Then change the current working directory to that ith folder.cwd2 contains the path to this directory. All the files in that folder will be stored in files2
+
+
+
+
+
+
+
+									BLOCK - 8(listing 8)
+	for i in range(0,60):
+		.
+		.
+		BLOCK - 8A
+		BLOCK - 8B
+		.
+		.
+
+BLOCK-8A and BLOCK-8B will be looped using this command and i will be determined by the loop number (i will start from 0)
+
+
+
+
+
+									BLOCK - 8A(listing 9)
+												
+
+		if i<10:
+			if i%10==1 or i%10==8 or i%10==9:
+				location=cwd0+"/adduser_test.txt"
+			else :
+				location=cwd0+"/adduser_training.txt";
+		elif i<20:
+			if i%10==1 or i%10==8 or i%10==9:
+				location=cwd0+"/hydra_ftp_test.txt"
+			else :
+				location=cwd0+"/hydra_ftp_training.txt";
+		elif i<30:
+			if i%10==1 or i%10==8 or i%10==9:
+				location=cwd0+"/hydra_ssh_test.txt"
+			else :
+				location=cwd0+"/hydra_ssh_training.txt";
+		elif i<40:
+			if i%10==1 or i%10==8 or i%10==9:
+				location=cwd0+"/java_meterpreter_test.txt"
+			else :
+				location=cwd0+"/java_meterpreter_training.txt";
+		elif i<50:
+			if i%10==1 or i%10==8 or i%10==9:
+				location=cwd0+"/meterpreter_test.txt"
+			else :
+				location=cwd0+"/meterpreter_training.txt";
+		else:
+			if i%10==1 or i%10==8 or i%10==9:
+				location=cwd0+"/webshell_test.txt"
+			else :
+				location=cwd0+"/webshell_training.txt";
+
+depending on the sorted list of files, location of files can be determined and thus from that according to that position (i), the name of the file will be determined which has to be used to add data from the given file
+
+
+
+						
+
+									BLOCK - 8B(listing 10)
+
+	for data in range(0,len(files2)):
+		fr=open(files2[data],"r")
+		text=fr.read();
+		fr.close();
+		fw=open(location,"a");
+		fw.write(text);
+		fw.write("\n\n")   
+		fw.close();
+
+Now, we will loop over all the files whose name is stored in files2 in the ith directory mentioned above. In every loop, one file not already read will be opened and its data will be stored in text and will be closed. then another file whose name is stored in location will be opened and text will be appended to it and then will be closed.
+
+
+
+
+
+
+			BLOCK-9(listing 11)
+
+	for i in range(1,3):
+	.
+	.
+	BLOCK-9A
+	BLOCK-9B
+	.
+	.
+
+
+BLOCK-9A and BLOCK-9B will be put under this loop.
+
+
+
+
+						BLOCK-9A(listing 12)
+
+	path=cwd0+"/"+folders0[i]; 
+	os.chdir(path)
+	cwd1=os.getcwd();
+	for sub1,folders1,files1 in os.walk(cwd1):
+		pass;
+	files1.sort();
+
+path contains the path to the folder, here it is Training_Data_Master and Validation_Data_Master, it will change the current directory to each one iteratively and then get the path stored in cwd1. In each folder files in those folder will be stored in files1 in sorted order 
+
+
+
+
+
+							BLOCK-9B(listing 13)
+
+	for data in range(0,len(files1)):
+		fr=open(files1[data],"r");
+		text=fr.read();
+		fr.close;
+		if i==1:
+			location=cwd0+"/Training_Data_Master.txt";
+		elif i==2:
+			location=cwd0+"/Validation_Data_Master.txt";
+		fw=open(location,"a");
+		fw.write(text);
+		fw.write("\n\n");
+		fw.close();
+
+iteratively it goes to each file and then stores data in text from that file and set the location according to the i(loop number) as mentioned in the next section. opening the file in main directory according to the value of i, the data will be stored in that file.
+
+
+
+							(listing 14)
+
+os.chdir(cwd0);
+training=["adduser_training.txt","hydra_ftp_training.txt","hydra_ssh_training.txt","java_meterpreter_training.txt","meterpreter_training.txt","webshell_training.txt","Training_Data_Master.txt"]
+
+current directory is changed to main directory and training list is initiated with the attack files and normal files.
+
+
+
+
+
+
+				BLOCK-10(listing 15)
+
+		for n in all_net_grams:
+			.
+			.
+			BLOCK-10A
+			BLOCK-10B
+			.
+			.
+
+		featurefile.close();
+
+iterate over all_net_grams (mentioned in BLOCK-2) and featurefiles created in the loop will be closed after the end of the loop
+
+
+
+
+				
+						BLOCK-10A(listing 16)
+
+	fname=str(n)+"grams_featurefile.txt"
+	featurefile=open(fname,"a")
+
+sets the name of featurefile and open it. featurefile consists of feature of ngrams as mentioned in fname.
+
+
+
+
+					BLOCK-10B(listing 17)
+	for t in training:
+		.
+		.
+		BLOCK-10BA
+		BLOCK-10BB
+		BLOCK-10BC
+		BLOCK-10BD
+		BLOCK-10BE
+		BLOCK-10BF
+		.
+		.
+
+itearates over concatenated file over all the attack files(6attacks+1normal=total 7 files)
+
+
+
+
+
+				BLOCK-10BA(listing 18)
+
+		length_of_trianing=len(training)
+		filename=str(n)+"gramsfor"+t
+		fw=open(filename,"a")
+		fr=open(t,"r")
+		text=fr.read();
+		fr.close();
+		all_grams=ngrams(text.split(),n)
+		
+calculates the length_of_training, opens a file with name stored in the variable filename and (attack file or normal file)will be opened  and data from it will be stored in text and then all the n grams depending on value of n will be stored in all_grams
+
+
+
+
+				BLOCK-10BB(listing 19)
+
+		for grams in all_grams:
+			try:
+				if point_int[grams]>=0:
+					passing=point_int[grams];
+			except:
+				passing=-1;
+			if passing>=0:					 
+				ind=passing;
+				count[ind]=count[ind]+1;	
+			else:						 
+				data.append(grams)
+				count.append(1)
+				point_int[grams]=index_count;
+				index_count=index_count+1;
+
+iterating over all the grams in all_grams generated in BLOCK-10BA, check if point_int dictionary has grams, if yes then passing is set to the dictionary value of that grams(which is the index of the feature in the data) else passing is set to -1. then if the if condition is passed for passing >=0 then increase the count in the count array where the ith count corresponds to the ith feature stored in data. If the condition fails then that grams is appended to the data, count to it is set to 1, new data to dictionary point_int is added with the value of its index in ddata and the index_count is increased by one which keeps the check on the index of the new value which will be stored in data.
+
+
+
+
+				BLOCK-10BC(listing 20)
+
+
+		p_data=[]
+		for i in range(len(data)):			 
+			temp=[count[i]]+[data[i]]
+			p_data.append(temp)					 
+		p_data.sort(reverse=True)
+
+a list is initiaited p_data which is multidimensional whose length will be equal of no of features in data and each block in those feature consists of count of the feature and the count which will be then sorted in reverse order.
+
+
+
+
+
+
+
+			BLOCK-10BD(listing 21)
+
+		for j in range(len(p_data)):
+			fw.write(str(p_data[j][0]));
+			fw.write(" ")
+			for i in range(n):
+				fw.write(p_data[j][1][i]);
+				fw.write(" ")
+			fw.write("\n")
+		fw.close();
+Then all the data from p_data is stored in file whose name was initiated in BLOCK-10BA
+
+
+
+
+
+
+			BLOCK-10BE(listing 22)
+
+		filename2="30percentwithout_count_of"+filename
+		filename="30percentof"+filename
+		fw=open(filename,"a")
+		fw2=open(filename2,"a")
+
+These files are opened where 30% of top data form p_data is stored in filename and filename2 baut filename2 does not tell the count
+
+
+
+
+			BLOCK-10BF(listing 23)
+
+		for j in range(math.ceil((len(p_data))*0.3)):
+			fw.write(str(p_data[j][0]));
+			fw.write(" ")
+			for i in range(n):
+				fw.write(p_data[j][1][i]);
+				fw2.write(p_data[j][1][i]);
+				featurefile.write(p_data[j][1][i]);
+				featurefile.write(" ")
+				fw2.write(" ")
+				fw.write(" ")
+			fw.write("\n")
+			featurefile.write("\n")
+			fw2.write("\n")
+		fw.close();
+
+data is written from the files opened in BLOCK-10E and BLOCK-10A 
+
+
+
+
+
+
+
+			BLOCK-11(listing 24)
+
+	def attack_type(foldfile):
+		if "Adduser" in foldfile:
+			return "Adduser";
+		elif "Hydra" in foldfile:
+			if "FTP" in foldfile:
+				return "Hydra_FTP";
+			elif "SSH" in foldfile:
+				return "Hydra_SSH"
+		elif "Meterpreter" in foldfile:
+			if "Java" in foldfile:
+				return "Java_Meterpreter";
+			else :
+				return "Meterpreter";
+		elif "WS" in foldfile or "Web" in foldfile:
+			return "Web_Shell"
+		else:
+			return "normal"
+
+according to the name of the folder it returns the name of the attack
+
+
+
+
+
+		BLOCK-12(listing 25)
+
+
+for n in all_net_grams:	
+	.
+	.
+	BLOCK-12A
+	BLOCK-12B
+	.
+	.
+
+iterates over all_net_grams as initiated in BLOCK-2
+
+
+
+
+
+			BLOCK-12A(listing 26)
+
+	fname=str(n)+"grams_featurefile.txt"
+	filename=str(n)+"grams_features.txt";
+	fr=open(fname,"r")
+	fw=open(filename,"a");
+	text=fr.read();
+	text=text.split("\n")
+
+stores the data from file with name stored in fname and splits the data to separate the data in different lines and store them again in text as array. opens a file with name stored in filename. This file will store all the unique n gram features
+
+
+
+
+
+		BLOCK-12B(listing 27)
+
+	for i in range (len(text)):				
+		.
+		.
+		BLOCK-12BA
+		BLOCK-12BB
+		BLOCK-12BC
+		.
+		.
+	features.append(temp);
+	fr.close();
+	fw.close();
+
+This will loop over the size of the text as generated in BLOCK-12A and i will be count on the loop number and files opened and created will be closed at last. temp(is mentioned in BLOCK-12BC) array will be appended to the features array.
+
+
+
+
+		BLOCK-12BA(listing 28)
+
+		text[i]=text[i].split();
+		for j in range(n):
+			if i==len(text)-1:
+				continue;
+			text[i][j]=int(text[i][j]);
+
+the text array created in BLOCK-12A will be further divided into subarrays based on the empty space between them and the individual strings will be converted into integer after that(features are divided into individual value and then converted to int).
+
+
+
+
+
+
+		BLOCK-12BB(listing 29)
+
+		ind=str(text[i])
+		try:
+			if mydictionary[ind]==1:		
+				flag=1
+		except:
+			flag=0;
+		if flag>0:
+			continue;
+
+the features are stored in ind and then check if the mydictionary has if, if yes then flag is turned to 1 else 0. so if the mydictionary has it then the loop will be converted(we are removing dublicates here)
+
+
+
+
+			BLOCK-12BC(listing 30)
+
+		mydictionary[ind]=1			
+		temp.append(text[i])
+		for k in range(n):
+			if i==len(text)-1:
+				continue;
+			fw.write(str(text[i][k]))
+			fw.write(" ")
+		fw.write("\n")
+
+if from the BLOCK-12BB if the flag is greater than 1 then mydictionary with the feature in it has its value equal to 1, the feature will then be appended to the temp. depending on the n grams(n was initiated in BLOCK-12) the data will be written into the file which was opened into BLOCK-12A.
+
+
+
+
+
+			BLOCK-13(listing 31)
+
+	for i in all_net_grams:			
+		filename=str(i)+"grams_features.txt";
+		fr=open(filename,"r");
+		text=fr.read();
+		text=text.split("\n")			 
+		fr.close()
+		featurelist.append(text)
+	cwd0=os.getcwd();				
+
+iterating over all_net_grams (initiated in BLOCK-2), the unique n grams features(here i) will be stored in text and then split into on the basis of the line and that will be appended in featurelist. Then stores the current working directory is cwd0.
+
+
+
+
+
+						BLOCK-14(listing 32)
+
+	for sub0,fold0,file0 in os.walk(cwd0):	
+		if len(fold0)>0:
+			break;
+
+the data about the contents in the current folder is stored in fold0 which is the main directory.
+
+
+
+
+
+					
+					BLOCK-15(listing 33)
+
+	os.system("mkdir output")
+	fold0.sort();					 
+	cwd1=cwd0+"/"+fold0[0];
+	os.chdir(cwd1)
+
+created output directory in the main directory, sorted the folders stored in fold0(it does not contain output folder). changed the directory to the first vlaue stored in fold0 which is Attack_Data_Master(in this case)
+
+
+
+
+
+
+			BLOCK-16(listing 34)
+
+	for sub1,fold1,file1 in os.walk(cwd1):	
+		if len(fold1)>0:
+		break;
+
+getting the list of folders from the current workign directory which is Attack_Data_Master(in this case)
+
+
+
+
+
+
+			BLOCK-17(listing 35)
+
+	fold1.sort()				
+	out_dir=cwd0+"/output"		
+	os.chdir(out_dir)
+	os.system("mkdir Attack_Data_Master")	
+
+sorting the list of folders whose names are stored in fold1. changed the directory to the output folder in the main directory and created Attack_Data_Master folder in that directory.
+
+
+
+
+
+			BLOCK-18(listing 36)
+
+
+	for folder in fold1:
+		filetype=attack_type(folder);
+		if '8' in folder  or '9' in folder or '10' in folder:	
+			.
+			.
+			Listing 37
+			Listing 38
+			.
+			.
+
+fold1 (same from BLOCK-17) is iterated and in every iteration the value in the fold1 is stored in folder variable. According to the name of the folder filetype stores the attack type(BLOCK-11) and checking whether the folder is from last 3 folders in the list.
+
+
+
+
+
+
+
+				BLOCK-18A(listing 37)
+
+			out_dir=cwd0+"/output/Attack_Data_Master"
+			cwd2=cwd1+"/"+folder
+			os.chdir(cwd2);
+			for sub2,fold2,file2 in os.walk(cwd2):
+				if len(file2)>0:
+					break;
+				pass;
+			sizeoffiles=len(file2)
+
+out_dir variable stores the path to Attack_Data_Master folder in output directory.Then go to the folder stored in folder variable from BLOCK-18. files2 stores the name of all the files in that directory. and sizeoffiles contains the number of files in that directory.
+
+
+
+
+
+
+
+
+					BLOCK-18B(listing 38)
+
+			for files in file2:				
+				.
+				.
+				Listing 39
+				.
+				.
+
+iterates over all the files whose name is stored in file2 from BLOCK-18A
+
+
+
+
+
+
+
+
+					BLOCK-18BA(listing 39)
+
+				fr=open(files,"r")
+				text=fr.read()
+				fr.close();
+				for i in range(len(all_net_grams)):			
+					.
+					.
+					Listing 40
+					Listing 41
+					Listing 42
+					.
+					.
+open the files over which BLOCK-18A is iterating. Store the value of that file in text and then after closing. Iterating over all_net_grams starts(BLOCK-2).
+
+
+
+
+
+					BLOCK-18BAA(listing 40)
+
+					featureindex=i;
+					thisfeatures=featurelist[featureindex];
+					count_features=0
+					for every_feature in thisfeatures:			 
+						mydictionary[every_feature]=count_features;
+						count_features=count_features+1
+
+featurelist contains all the features of all grams and this features contains the particular features according to the loop i.e. the value of i. as i increase the next value in all_net_grams is the ngrams feature which will be stored in thisfeatures. then a dictionary is implemented by name mydictionary which stores features in it and the value of those features is number of features appeared till that point.
+
+
+
+					BLOCK-18BAB(listing 41)
+
+					single_grams=ngrams(text.split(),all_net_grams[i])
+					for grams in single_grams:		 
+						string=grams[0]+" ";
+						for j in range(1,all_net_grams[i]):
+							string=string+grams[j]+" ";
+
+						try:						
+							if mydictionary[string]>=0:			 
+								flag=1;
+						except:
+								flag=0;						 
+						if flag==1:
+							ind=mydictionary[string];
+							count[ind]=count[ind]+1;		 
+
+created ngrams and stored in single_grams for the data that was gathered from the last 3 folders(BLOCK-18BA). Iterating over all those grams, string consist the feature as a string in a particular format (e.g.:-  "2 3 4 "). then if mydictoinary has that feature then flag=1 else flag=0. if flag is 1 then after getting value of the string stored in mydictionary in ind we increase the count for that index with value of ind in count list(value of feature in mydictionary is the feature number )
+
+
+
+
+
+
+					BLOCK-18BAC(listing 42)
+
+
+					filename=str(all_net_grams[i])+"gramsfrequency_"
+					out_dir=cwd0+"/output/Attack_Data_Master/";
+					os.chdir(out_dir)						
+					fw=open(filename,"a")					
+					for frequency in range(len(count)):		
+						fw.write(str(count[frequency]))
+						fw.write(",")
+					fw.write(filetype)
+					fw.write("\n\n")
+					os.chdir(cwd2)
+
+changes directory to Attack_Data_master and open the file with the file name as stored in filename and write the frequency of those features in that file(features are generated from last 3 folders of Attack_Data_Master which is the test data for the attacks). Store that file in Attack_Data_Master in output.
+
+
+
+
+
+											OPTIONAL
+
+
+
+
+
+									BLOCK-19(listing 43)
+
+	cwd1=cwd0+"/"+fold0[2];
+	out_dir=cwd0+"/output"
+	os.chdir(out_dir)
+	os.system("mkdir Validation_Data_Master") 
+	os.chdir(cwd1)
+	for sub1,fold1,files1 in os.walk(cwd1):	 
+		pass;
+	filetype=attack_type(fold0[2]);
+
+change the current working directory to output and make Validation_Data_Master folder in it. Get the name of all the files from the Validation_Data_Master in the main directory. filetype consists the name of attack if it is else normal according to the folder name.
+
+
+
+
+
+
+
+									BLOCK-20(listing 44)
+
+
+	for files in files1:		
+		fr=open(files,"r")
+		text=fr.read();
+		fr.close();
+		for i in range(len(all_net_grams)):	
+			.
+			.
+			Listing 45
+			Listing 46
+			Listing 47
+			Listing 48
+			Listing 49
+			.
+			.		
+
+iteratively open the file and stores its data in text. Iterates over all_net_grams
+
+
+
+
+
+
+
+											BLOCK-20A(listing 45)
+
+			featureindex=i;
+			mydictionary={};
+			thisfeatures=featurelist[featureindex];
+			count_features=0
+
+thisfeatures contains the feature list for particular ngrams. featurelist stores all the features.
+
+
+
+
+
+
+
+											BLOCK-20B(listing 46)
+
+			for every_feature in thisfeatures:			 
+				mydictionary[every_feature]=count_features;
+				count_features=count_features+1
+
+makes mydictionary dictionary and stores all the features with its value equal to the index of feature number. count_features keeps the track of the feature index of size of mydictionary.
+
+
+
+
+
+											BLOCK-20C(listing 47)
+
+			count=[0 for x in range(len(featurelist[featureindex])) ]
+			single_grams=ngrams(text.split(),all_net_grams[i]);
+
+single_grams contains all the ngrams stored in text(BLOCK-20) according to the value in all_net_grams ith index
+
+
+
+
+
+											BLOCK-20D(listing 48)
+
+			for grams in single_grams:		
+				string=grams[0]+" ";
+				for j in range(1,all_net_grams[i]):
+					string=string+grams[j]+" ";
+
+				try:						
+					if mydictionary[string]>=0:			#present in mydictionary that is , it is a feature
+						flag=1;
+				except:
+					flag=0;						#fearture not present
+				if flag==1:
+					ind=mydictionary[string];
+					count[ind]=count[ind]+1;		#couting
+
+Iterating over all those grams(BLOCK-20), string consist the feature as a string in a particular format (e.g.:-  "2 3 4 "). then if mydictoinary has that feature then flag=1 else flag=0. if flag is 1 then after getting value of the string stored in mydictionary in ind we increase the count for that index with value of ind in count list(value of feature in mydictionary is the feature number )
+
+
+
+
+
+											BLOCK-20E(listing 49)
+
+
+			filename=str(all_net_grams[i])+"gramsfrequency"
+			out_dir=cwd0+"/output/Validation_Data_Master"
+			os.chdir(out_dir)						
+			fw=open(filename,"a")			
+			for frequency in range(len(count)):			#writing the features and frequency of it in the files
+				fw.write(str(count[frequency]))
+				fw.write(",")
+			fw.write(filetype)
+			fw.write("\n\n")
+			os.chdir(cwd1)
+
+changes directory to Validation_Data_master and open the file with the file name as stored in filename and write the frequency of those features in that file(features are generated from Validation_Data_Master which is the test data for the attacks). Store that file in Validation_Data_masater in output.
+
+
+
+
